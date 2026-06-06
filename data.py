@@ -11,7 +11,7 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 LOW_FREQ = 0.1
 HIGH_FREQ = 70
 NOTCH_FREQ = 50
-EPOCH_LENGTH = 5  # seconds
+EPOCH_LENGTH = 5  
 OVERLAP = 0.5  # 50% overlap -> 2.5 s step
 
 edf_files = []

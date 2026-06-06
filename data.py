@@ -4,7 +4,7 @@ import mne
 from tqdm import tqdm
 from scipy.stats import zscore
 
-# ========== CONFIGURATION ==========
+
 DATASET_PATH = r"C:\Users\mohimaCHAKRABORTY\Taskupdate"
 OUTPUT_FOLDER = os.path.join(DATASET_PATH, "processed_data_epochs")
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -16,7 +16,7 @@ NOTCH_FREQ = 50
 EPOCH_LENGTH = 5  # seconds
 OVERLAP = 0.5  # 50% overlap -> 2.5 s step
 
-# ========== FIND ALL EDF FILES ==========
+
 edf_files = []
 for root, dirs, files in os.walk(DATASET_PATH):
     for file in files:
@@ -26,7 +26,7 @@ for root, dirs, files in os.walk(DATASET_PATH):
 print(f"Found {len(edf_files)} EDF files\n")
 
 
-# ========== ICA HELPER (FastICA only, no extra dependencies) ==========
+
 def apply_ica(raw, n_components=0.99, random_state=42):
     """Fit FastICA and remove EOG artifacts if an EOG channel exists."""
     # Identify EOG channels (case‑insensitive)
@@ -34,7 +34,7 @@ def apply_ica(raw, n_components=0.99, random_state=42):
     if not eog_channels:
         print("   No EOG channel found. ICA will be fitted but no components will be excluded.")
 
-    # Use FastICA (always available via sklearn)
+    
     ica = mne.preprocessing.ICA(
         n_components=n_components,
         method='fastica',
@@ -45,7 +45,7 @@ def apply_ica(raw, n_components=0.99, random_state=42):
     ica.fit(raw)
 
     if eog_channels:
-        # Use the first EOG channel to find artefactual components
+        
         eog_idx, scores = ica.find_bads_eog(raw, ch_name=eog_channels[0])
         ica.exclude = eog_idx
         print(f"   Excluding {len(eog_idx)} EOG components")
@@ -57,12 +57,12 @@ def apply_ica(raw, n_components=0.99, random_state=42):
     return cleaned
 
 
-# ========== MAIN PREPROCESSING FUNCTION ==========
+
 def preprocess_file(file_path):
     file_name = os.path.basename(file_path)
     print(f"\nProcessing: {file_name}")
 
-    # ----- 1. Load -----
+    
     raw = mne.io.read_raw_edf(file_path, preload=True, verbose=False)
     raw.pick('eeg')  # keep only EEG channels
     print(f"   EEG channels: {len(raw.ch_names)}")

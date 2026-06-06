@@ -13,15 +13,12 @@ HIGH_FREQ = 70
 NOTCH_FREQ = 50
 EPOCH_LENGTH = 5  
 OVERLAP = 0.5  # 50% overlap -> 2.5 s step
-
 edf_files = []
 for root, dirs, files in os.walk(DATASET_PATH):
     for file in files:
         if file.lower().endswith(".edf"):
             edf_files.append(os.path.join(root, file))
-
 print(f"Found {len(edf_files)} EDF files\n")
-
 def apply_ica(raw, n_components=0.99, random_state=42):
     """Fit FastICA and remove EOG artifacts if an EOG channel exists."""
     # Identify EOG channels (case‑insensitive)
@@ -66,8 +63,6 @@ def preprocess_file(file_path):
     print(f"   Epochs generated: {epoch_data.shape[0]}")
     epoch_data = zscore(epoch_data, axis=-1)
     epoch_data = np.nan_to_num(epoch_data)  
-
-    
     base_name = os.path.splitext(file_name)[0].lower()
     if base_name.startswith('h'):
         label = 0  # healthy control
@@ -76,17 +71,13 @@ def preprocess_file(file_path):
     else:
         print(f"   Unknown label in filename: {file_name}, skipping.")
         return
-
     labels = np.full(len(epoch_data), label, dtype=np.uint8)
     epoch_data = epoch_data.astype(np.float16)
     out_prefix = os.path.join(OUTPUT_FOLDER, os.path.splitext(file_name)[0])
     np.save(f"{out_prefix}_epochs.npy", epoch_data)
     np.save(f"{out_prefix}_labels.npy", labels)
-
     print(f"   Saved: {out_prefix}_epochs.npy (shape {epoch_data.shape}, dtype float16)")
     print(f"   Saved: {out_prefix}_labels.npy (shape {labels.shape}, dtype uint8)")
-
 for fpath in tqdm(edf_files, desc="Overall progress"):
     preprocess_file(fpath)
-
 print(f"\n All processing finished. Clean epochs saved in:\n {OUTPUT_FOLDER}")

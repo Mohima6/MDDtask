@@ -9,13 +9,9 @@ OUTPUT_BASE_PLI = os.path.join(DATASET_PATH, "connectivity", "PLI")
 OUTPUT_BASE_WPLI = os.path.join(DATASET_PATH, "connectivity", "wPLI")
 FREQUENCY_BANDS = ["delta", "theta", "alpha", "beta", "gamma"]
 
-# Create output folders for both metrics
 for metric_base in [OUTPUT_BASE_PLI, OUTPUT_BASE_WPLI]:
     for band in FREQUENCY_BANDS:
         os.makedirs(os.path.join(metric_base, band), exist_ok=True)
-
-
-# ========== HELPER FUNCTIONS ==========
 def compute_pli(signal1, signal2):
     """
     Phase Lag Index (PLI) between two signals.
@@ -29,8 +25,6 @@ def compute_pli(signal1, signal2):
     imag_cross = np.sin(phase_diff)
     pli = np.abs(np.mean(np.sign(imag_cross)))
     return pli
-
-
 def compute_wpli(signal1, signal2):
     """
     Weighted Phase Lag Index (wPLI) – magnitude of imaginary part weighted by its absolute value.
@@ -46,8 +40,6 @@ def compute_wpli(signal1, signal2):
     if denominator == 0:
         return 0.0
     return numerator / denominator
-
-
 def compute_connectivity_matrix(epoch_data, metric='pli'):
     """
     Compute full connectivity matrix (PLI or wPLI) for one epoch.
@@ -64,8 +56,6 @@ def compute_connectivity_matrix(epoch_data, metric='pli'):
             mat[i, j] = val
             mat[j, i] = val
     return mat
-
-
 def process_metric(metric_name, output_base):
     """
     Process all bands for a single connectivity metric (PLI or wPLI).
@@ -74,20 +64,16 @@ def process_metric(metric_name, output_base):
     for band in FREQUENCY_BANDS:
         band_input_dir = os.path.join(BAND_DECOMP_DIR, band)
         band_output_dir = os.path.join(output_base, band)
-
         epoch_files = [f for f in os.listdir(band_input_dir) if f.endswith('.npy')]
         if not epoch_files:
             print(f"   No band files for {band}, skipping")
             continue
-
-        # Label folder (original clean epochs)
         label_dir = os.path.join(DATASET_PATH, "processed_data_epochs")
-
         for epoch_file in tqdm(epoch_files, desc=f"{metric_name.upper()} {band}"):
             band_data = np.load(os.path.join(band_input_dir, epoch_file))
             n_epochs, n_channels, n_times = band_data.shape
 
-            # Get base subject name
+            
             base_name = epoch_file.replace(f"_{band}.npy", "")
             label_file = os.path.join(label_dir, f"{base_name}_labels.npy")
             if os.path.exists(label_file):
@@ -96,7 +82,7 @@ def process_metric(metric_name, output_base):
                 print(f"   Warning: no labels for {base_name}, skipping")
                 continue
 
-            # Compute connectivity for each epoch
+            
             for ep_idx in range(n_epochs):
                 epoch_signal = band_data[ep_idx]  # (n_channels, n_times)
                 conn_mat = compute_connectivity_matrix(epoch_signal, metric=metric_name)
@@ -104,21 +90,21 @@ def process_metric(metric_name, output_base):
                 out_path = os.path.join(band_output_dir, out_name)
                 np.save(out_path, conn_mat)
 
-            # Save labels (once per subject)
+           
             label_out = os.path.join(band_output_dir, f"{base_name}_labels.npy")
             np.save(label_out, labels)
 
             print(f"   Saved {n_epochs} {metric_name.upper()} matrices for {base_name} ({band})")
 
 
-# ========== MAIN ==========
+
 if __name__ == "__main__":
     print("Starting PLI and wPLI computation...")
 
-    # Compute PLI
+    
     process_metric('pli', OUTPUT_BASE_PLI)
 
-    # Compute wPLI
+    
     process_metric('wpli', OUTPUT_BASE_WPLI)
 
     print(f"\n All done. Results saved in:\n {OUTPUT_BASE_PLI}\n {OUTPUT_BASE_WPLI}")

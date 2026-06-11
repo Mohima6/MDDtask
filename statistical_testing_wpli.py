@@ -9,9 +9,8 @@ import seaborn as sns
 from itertools import combinations
 from collections import Counter
 
-
 DATASET_PATH = r"C:\Users\mohimaCHAKRABORTY\Taskupdate"
-CONN_METRIC = "wPLI"   
+CONN_METRIC = "PLI"  
 CONN_DIR = os.path.join(DATASET_PATH, "connectivity", CONN_METRIC)
 STATS_OUTPUT = os.path.join(DATASET_PATH, "statistics", CONN_METRIC)
 FREQUENCY_BANDS = ["delta", "theta", "alpha", "beta", "gamma"]
@@ -22,7 +21,7 @@ for band in FREQUENCY_BANDS:
     os.makedirs(os.path.join(band_out, "figures"), exist_ok=True)
 def cohen_d(x, y):
     nx, ny = len(x), len(y)
-    pooled_std = np.sqrt(((nx-1)*np.var(x, ddof=1) + (ny-1)*np.var(y, ddof=1)) / (nx+ny-2))
+    pooled_std = np.sqrt(((nx - 1) * np.var(x, ddof=1) + (ny - 1) * np.var(y, ddof=1)) / (nx + ny - 2))
     if pooled_std == 0:
         return 0.0
     return (np.mean(x) - np.mean(y)) / pooled_std
@@ -32,7 +31,7 @@ def rank_biserial(x, y):
     return 1 - (2 * u) / (n1 * n2)
 def load_and_average_subject(band_dir, subject_base):
     """Load all epoch matrices for a subject and average across epochs."""
-    epoch_files = [f for f in os.listdir(band_dir) 
+    epoch_files = [f for f in os.listdir(band_dir)
                    if f.startswith(subject_base) and f.endswith(f"_{CONN_METRIC.lower()}.npy")]
     if not epoch_files:
         return None
@@ -59,7 +58,7 @@ for band in FREQUENCY_BANDS:
         labels = np.load(os.path.join(band_dir, lf))
         if len(labels) > 0:
             subject_base_names.append(base)
-            labels_list.append(labels[0])   
+            labels_list.append(labels[0])  
     subject_matrices = []
     valid_labels = []
     valid_bases = []
@@ -79,7 +78,7 @@ for band in FREQUENCY_BANDS:
         common_n = shape_counts.most_common(1)[0][0]
         print(f"  Inconsistent channel counts: {dict(shape_counts)}")
         print(f"  Keeping only subjects with {common_n} channels")
-        filtered = [(mat, lab, base) for mat, lab, base in zip(subject_matrices, valid_labels, valid_bases) 
+        filtered = [(mat, lab, base) for mat, lab, base in zip(subject_matrices, valid_labels, valid_bases)
                     if mat.shape[0] == common_n]
         if not filtered:
             print(f"  No subjects with consistent channel count, skipping {band}")
@@ -167,7 +166,7 @@ for band in FREQUENCY_BANDS:
     # Figure 2: Effect size heatmap
     plt.figure(figsize=(10, 8))
     mask = np.triu(np.ones_like(effect_mat, dtype=bool), k=1)
-    sns.heatmap(effect_mat, mask=mask, cmap='RdBu_r', center=0, 
+    sns.heatmap(effect_mat, mask=mask, cmap='RdBu_r', center=0,
                 square=True, cbar_kws={"label": "Effect size"})
     plt.title(f"{CONN_METRIC} - {band} band: Effect sizes\n(Red=higher in MDD, Blue=higher in Healthy)")
     plt.tight_layout()
@@ -176,7 +175,7 @@ for band in FREQUENCY_BANDS:
     print(f"  Saved effect_size_heatmap.png")
     # Figure 3: Bar plot of significant counts
     plt.figure(figsize=(6, 4))
-    counts = [len(sig_df), len(df)-len(sig_df)]
+    counts = [len(sig_df), len(df) - len(sig_df)]
     labels = ['Significant', 'Non-significant']
     colors = ['firebrick', 'lightgray']
     plt.bar(labels, counts, color=colors)

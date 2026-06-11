@@ -116,7 +116,7 @@ for band in FREQUENCY_BANDS:
             _, p_val = stats.mannwhitneyu(values_healthy, values_mdd, alternative='two-sided')
             effect = rank_biserial(values_healthy, values_mdd)
             test_used = "Mann-Whitney"
-results.append({
+        results.append({
             "channel_i": i,
             "channel_j": j,
             "p_raw": p_val,
@@ -142,8 +142,6 @@ results.append({
         effect_mat[i, j] = row["effect_size"]
         effect_mat[j, i] = row["effect_size"]
     np.save(os.path.join(STATS_OUTPUT, band, "effect_sizes.npy"), effect_mat)
-
-    
     fig_dir = os.path.join(STATS_OUTPUT, band, "figures")
     # Figure 1: Top 10 significant connections - boxplots
     if len(sig_df) > 0:

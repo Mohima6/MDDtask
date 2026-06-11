@@ -10,7 +10,7 @@ from itertools import combinations
 from collections import Counter
 
 DATASET_PATH = r"C:\Users\mohimaCHAKRABORTY\Taskupdate"
-CONN_METRIC = "PLV"  # Change to "PLI" or "wPLI" later
+CONN_METRIC = "PLV"  
 CONN_DIR = os.path.join(DATASET_PATH, "connectivity", CONN_METRIC)
 STATS_OUTPUT = os.path.join(DATASET_PATH, "statistics", CONN_METRIC)
 FREQUENCY_BANDS = ["delta", "theta", "alpha", "beta", "gamma"]
@@ -74,7 +74,6 @@ for band in FREQUENCY_BANDS:
     shapes = [mat.shape[0] for mat in subject_matrices]
     unique_shapes = set(shapes)
     if len(unique_shapes) > 1:
-        # Find the most common channel count
         shape_counts = Counter(shapes)
         common_n = shape_counts.most_common(1)[0][0]
         print(f"  Inconsistent channel counts: {dict(shape_counts)}")

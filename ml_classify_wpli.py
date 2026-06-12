@@ -17,7 +17,7 @@ import json
 import warnings
 warnings.filterwarnings('ignore')
 DATASET_PATH = r"C:\Users\mohimaCHAKRABORTY\Taskupdate"
-CONN_METRIC = "wPLI"   # <-- SET FOR wPLI
+CONN_METRIC = "wPLI"   
 CONN_BASE = os.path.join(DATASET_PATH, "connectivity", CONN_METRIC)
 RESULT_BASE = os.path.join(DATASET_PATH, "machine_learning", "results", CONN_METRIC)
 os.makedirs(RESULT_BASE, exist_ok=True)

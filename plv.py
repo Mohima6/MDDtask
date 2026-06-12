@@ -7,7 +7,6 @@ DATASET_PATH = r"C:\Users\mohimaCHAKRABORTY\Taskupdate"
 BAND_DECOMP_DIR = os.path.join(DATASET_PATH, "band_decomposition")
 OUTPUT_BASE = os.path.join(DATASET_PATH, "connectivity", "PLV")
 FREQUENCY_BANDS = ["delta", "theta", "alpha", "beta", "gamma"]
-
 for band in FREQUENCY_BANDS:
     os.makedirs(os.path.join(OUTPUT_BASE, band), exist_ok=True)
 def plv(signal1, signal2):
@@ -16,10 +15,8 @@ def plv(signal1, signal2):
     signal1, signal2 : 1D numpy arrays (time series)
     Returns a float between 0 and 1.
     """
-    # Hilbert transform to get instantaneous phase
     phase1 = np.angle(hilbert(signal1))
     phase2 = np.angle(hilbert(signal2))
-    # Phase difference
     phase_diff = phase1 - phase2
     # PLV = |mean(e^{j * phase_diff})|
     return np.abs(np.mean(np.exp(1j * phase_diff)))
